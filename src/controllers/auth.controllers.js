@@ -2,21 +2,27 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import config from '../configs/config.js';
 import responseHandler from '../handlers/response.handler.js';
-import userModel from '../models/user.model.js';
-import generateTokens from '../utils/generateTokens.util.js';
+import userModel from '../models/user.models.js';
+import generateTokens from '../utils/generateTokens.utils.js';
 
+// số vòng hash password
 const saltRounds = 10;
 
 class authController {
-  static async signUp(req, res) {
+  // @route [POST] /api/v1/auth/signup
+  // @desc POST data to Sign Up
+  // @access Public
+  async signUp(req, res) {
     try {
-      const { username, password, displayName } = req.body;
+      const { username, password, email, displayName } = req.body;
 
-      const checkUserExists = await userModel.findOne({ username });
+      const checkExists = await userModel.findOne({
+        $or: [{ email }, { username }],
+      });
 
-      if (checkUserExists) {
+      if (checkExists) {
         return responseHandler.badrequest(res, {
-          msg: 'Username already exists!',
+          err: 'Username or email already exists!',
         });
       }
 
@@ -26,9 +32,14 @@ class authController {
         username,
         password: hashPassword,
         displayName,
+        email,
+        phone_number: req.body.phone_number,
+        address: req.body.address,
       });
 
       await newUser.save();
+
+      delete newUser._doc.password;
 
       responseHandler.ok(res, newUser);
     } catch (error) {
@@ -36,8 +47,17 @@ class authController {
     }
   }
 
-  static async signIn(req, res) {
+  // @route [POST] /api/v1/auth/signin
+  // @desc POST data to Sign In
+  // @access Public
+  async signIn(req, res) {
     try {
+      const cookies = req.cookies;
+
+      if (cookies && cookies.rftk) {
+        return responseHandler.badrequest(res, { err: 'FUCK SHIT!' });
+      }
+
       const { username, password } = req.body;
 
       const currentUser = await userModel.findOne({ username });
@@ -52,13 +72,12 @@ class authController {
       );
 
       if (!checkPassword) {
-        return responseHandler.badrequest(res, { msg: 'Wrong Password!' });
+        return responseHandler.badrequest(res, { err: 'Wrong Password!' });
       }
 
       const tokens = generateTokens({
         id: currentUser.id,
-        username: currentUser.username,
-        displayName: currentUser.displayName,
+        roll: currentUser.roll,
       });
 
       res.cookie('rftk', tokens.refreshToken, {
@@ -74,7 +93,10 @@ class authController {
     }
   }
 
-  static async refreshToken(req, res) {
+  // @route [POST] /api/v1/auth/refreshToken
+  // @desc Post to get new Access Token
+  // @access Private
+  async refreshToken(req, res) {
     try {
       const refreshToken = req.cookies.rftk;
 
@@ -98,8 +120,7 @@ class authController {
 
           const tokens = generateTokens({
             id: foundUser.id,
-            username: foundUser.username,
-            displayName: foundUser.displayName,
+            roll: foundUser.roll,
           });
 
           res.cookie('rftk', tokens.refreshToken, {
@@ -115,7 +136,10 @@ class authController {
     }
   }
 
-  static async signOut(req, res) {
+  // @route [DELETE] /api/v1/auth/signup
+  // @desc DELETE token to Sign Out
+  // @access Private
+  async signOut(req, res) {
     try {
       const cookies = req.cookies;
 
@@ -132,4 +156,4 @@ class authController {
   }
 }
 
-export default authController;
+export default new authController();

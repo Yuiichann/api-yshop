@@ -17,7 +17,8 @@ const verifyToken = async (req, res, next) => {
         return responseHandler.unauthorize(res, { err });
       }
 
-      req.user = decoded;
+      const { iat, exp, ...userInfo } = decoded;
+      req.user = userInfo;
 
       next();
     });
@@ -26,4 +27,35 @@ const verifyToken = async (req, res, next) => {
   }
 };
 
-export default verifyToken;
+const verifyTokenAdmin = async (req, res, next) => {
+  try {
+    const authHeaders = req.headers['authorization'];
+
+    const token = authHeaders && authHeaders.split(' ')[1];
+
+    if (!token) {
+      return responseHandler.unauthorize(res, { err: 'Invalid Token!' });
+    }
+
+    jwt.verify(token, config.jwt.ACCESS_TOKEN_SECRET, (err, decoded) => {
+      if (err) {
+        return responseHandler.unauthorize(res, { err });
+      }
+
+      const { iat, exp, id, roll } = decoded;
+
+      if (roll !== 'admin') {
+        return responseHandler.unauthorize(res, {
+          err: 'User does not have access to this resource!',
+        });
+      }
+      req.user = { id, roll };
+
+      next();
+    });
+  } catch (error) {
+    responseHandler.unauthorize(res, { err: 'Invalid Tokens' });
+  }
+};
+
+export { verifyToken, verifyTokenAdmin };

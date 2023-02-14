@@ -1,28 +1,28 @@
 import chalk from 'chalk';
 
 class Logging {
-  static info(args) {
+  info(args) {
     console.log(
       chalk.blue(`[${new Date().toLocaleString()}] [INFO]`),
       typeof args === 'string' ? chalk.blueBright(args) : args
     );
   }
 
-  static success(args) {
+  success(args) {
     console.log(
       chalk.green(`[${new Date().toLocaleString()}] [INFO]`),
       typeof args === 'string' ? chalk.greenBright(args) : args
     );
   }
 
-  static warn(args) {
+  warn(args) {
     console.log(
       chalk.yellow(`[${new Date().toLocaleString()}] [INFO]`),
       typeof args === 'string' ? chalk.yellowBright(args) : args
     );
   }
 
-  static error(args) {
+  error(args) {
     console.log(
       chalk.red(`[${new Date().toLocaleString()}] [INFO]`),
       typeof args === 'string' ? chalk.redBright(args) : args
@@ -30,4 +30,4 @@ class Logging {
   }
 }
 
-export default Logging;
+export default new Logging();

@@ -9,6 +9,7 @@ import routes from './src/routes/index.js';
 
 const app = express();
 
+app.disable('x-powered-by');
 app.use(
   cors({
     origin: 'http://localhost:5173',
@@ -18,11 +19,22 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(morgan('combined'));
+
+if (config.server.NODE_ENV && config.server.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+} else {
+  app.use(morgan('combined'));
+}
 
 // routes
 app.use('/api/v1', routes);
 
+//route not found
+app.all('*', (req, res) =>
+  res.status(404).json({ status: 404, msg: 'Resource Not Found!' })
+);
+
+// connect database
 mongoose
   .connect(config.db.MONGODB_URL)
   .then(() => {

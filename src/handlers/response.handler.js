@@ -11,10 +11,10 @@ const error = (res, err) => {
   });
 };
 
-const badrequest = (res, data) =>
+const badrequest = (res, { err }) =>
   responseWithData(res, 400, {
     status: 400,
-    data,
+    error: err,
   });
 
 const ok = (res, data) => responseWithData(res, 200, { status: 200, data });
@@ -37,8 +37,8 @@ const notfound = (res) =>
     msg: 'Resource not found!',
   });
 
-const unprocessableEntity = (res, err) =>
-  responseWithData(res, 422, { status: 422, err });
+const unprocessableEntity = (res, { err }) =>
+  responseWithData(res, 422, { status: 422, error: err });
 
 export default {
   ok,

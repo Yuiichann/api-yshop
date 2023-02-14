@@ -8,7 +8,7 @@ const ValidateJoi = (schema) => {
 
       next();
     } catch (error) {
-      responseHandler.unprocessableEntity(res, error.details);
+      responseHandler.unprocessableEntity(res, { err: error.details });
     }
   };
 };
@@ -19,11 +19,41 @@ const validateSchema = {
       username: Joi.string().required(),
       password: Joi.string().required(),
       displayName: Joi.string().required(),
+      email: Joi.string().email().required(),
+      phone_number: Joi.string()
+        .regex(/^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$/)
+        .required(),
+      address: Joi.object({
+        province: Joi.string().required(),
+        district: Joi.string().required(),
+        ward: Joi.string().required(),
+        detail: Joi.string().required(),
+      }),
     }),
 
     signIn: Joi.object({
       username: Joi.string().required(),
       password: Joi.string().required(),
+    }),
+  },
+
+  order: {
+    create: Joi.object({
+      address: Joi.object({
+        province: Joi.string().required(),
+        district: Joi.string().required(),
+        ward: Joi.string().required(),
+        detail: Joi.string().required(),
+      }),
+      phone_number: Joi.string()
+        .regex(/^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$/)
+        .required(),
+      products: Joi.array().items(
+        Joi.object({
+          figure_id: Joi.string().required(),
+          quantity: Joi.number().integer().required(),
+        })
+      ),
     }),
   },
 };

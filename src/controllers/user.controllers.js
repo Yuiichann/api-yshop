@@ -1,8 +1,11 @@
 import responseHandler from '../handlers/response.handler.js';
-import userModel from '../models/user.model.js';
+import userModel from '../models/user.models.js';
 
 class userController {
-  static async getInfoUser(req, res) {
+  // @route [GET] /api/v1/user/info
+  // @desc Get Info Current User
+  // @access Private
+  async getInfoUser(req, res) {
     try {
       const userId = req.user.id;
 
@@ -21,4 +24,4 @@ class userController {
   }
 }
 
-export default userController;
+export default new userController();

@@ -1,5 +1,6 @@
 import express from 'express';
-import authController from '../controllers/auth.controller.js';
+import authController from '../controllers/auth.controllers.js';
+import limiterLogin from '../middleware/limiterLogin.middlewares.js';
 import { ValidateJoi, validateSchema } from '../middleware/joi.middleware.js';
 
 const router = express.Router();
@@ -12,11 +13,12 @@ router.post(
 
 router.post(
   '/signin',
+  limiterLogin,
   ValidateJoi(validateSchema.user.signIn),
   authController.signIn
 );
 
-router.get('/refreshToken', authController.refreshToken);
+router.post('/refreshToken', authController.refreshToken);
 
 router.delete('/signout', authController.signOut);
 
