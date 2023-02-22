@@ -52,6 +52,19 @@ const figureSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    // 4 thằng này có thể không có
+    size: {
+      type: String,
+    },
+    series: {
+      type: String,
+    },
+    publisher: {
+      type: String,
+    },
+    character: {
+      type: String,
+    },
   },
   { ...modelOptions, timestamps: false }
 );

@@ -7,14 +7,14 @@ const error = (res, err) => {
   Logging.error(err);
   return responseWithData(res, 500, {
     status: 500,
-    msg: 'Internal Server Error!',
+    message: 'Internal Server Error!',
   });
 };
 
 const badrequest = (res, { err }) =>
   responseWithData(res, 400, {
     status: 400,
-    error: err,
+    message: err,
   });
 
 const ok = (res, data) => responseWithData(res, 200, { status: 200, data });
@@ -28,17 +28,17 @@ const created = (res, data) =>
 const unauthorize = (res, { err }) =>
   responseWithData(res, 401, {
     status: '401',
-    err,
+    message: err,
   });
 
 const notfound = (res) =>
   responseWithData(res, 404, {
     status: 404,
-    msg: 'Resource not found!',
+    message: 'Resource not found!',
   });
 
 const unprocessableEntity = (res, { err }) =>
-  responseWithData(res, 422, { status: 422, error: err });
+  responseWithData(res, 422, { status: 422, message: err });
 
 export default {
   ok,

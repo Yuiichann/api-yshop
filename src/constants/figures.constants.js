@@ -16,7 +16,7 @@ const categoryList = [
   'pop-up-parade',
   'figma',
   'r-18',
-  'others',
+  'other',
 ];
 
 export { scaleList, categoryList };

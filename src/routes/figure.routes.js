@@ -7,4 +7,6 @@ router.get('/', figureControllers.getFigures);
 
 router.get('/details/:slug', figureControllers.getDetail);
 
+// router.delete('', figureControllers.delete);
+
 export default router;
