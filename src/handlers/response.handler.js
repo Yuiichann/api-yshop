@@ -31,11 +31,12 @@ const unauthorize = (res, { err }) =>
     message: err,
   });
 
-const notfound = (res) =>
+const notfound = (res, { err }) => {
   responseWithData(res, 404, {
     status: 404,
-    message: 'Resource not found!',
+    message: err,
   });
+};
 
 const unprocessableEntity = (res, { err }) =>
   responseWithData(res, 422, { status: 422, message: err });

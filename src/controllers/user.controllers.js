@@ -12,10 +12,12 @@ class userController {
 
       const user = await userModel
         .findById(userId)
-        .select('-createdAt -updatedAt -password');
+        .select('-createdAt -updatedAt -password -roll');
 
       if (!user) {
-        return responseHandler.notfound(res);
+        return responseHandler.notfound(res, {
+          err: 'Người dùng không hợp lệ!!!',
+        });
       }
 
       responseHandler.ok(res, user);

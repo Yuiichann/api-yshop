@@ -39,9 +39,17 @@ class authController {
 
       await newUser.save();
 
-      delete newUser._doc.password;
+      const tokens = generateTokens({
+        id: newUser.id,
+        role: newUser.role,
+      });
 
-      responseHandler.ok(res, newUser);
+      res.cookie('rftk', tokens.refreshToken, {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+      });
+
+      responseHandler.ok(res, { accessToken: tokens.accessToken });
     } catch (error) {
       responseHandler.error(res, error);
     }
@@ -55,7 +63,9 @@ class authController {
       const cookies = req.cookies;
 
       if (cookies && cookies.rftk) {
-        return responseHandler.badrequest(res, { err: 'FUCK SHIT!' });
+        return responseHandler.badrequest(res, {
+          err: 'Mày đã loggin rồi đấy!!',
+        });
       }
 
       const { username, password } = req.body;
@@ -63,7 +73,9 @@ class authController {
       const currentUser = await userModel.findOne({ username });
 
       if (!currentUser) {
-        return responseHandler.notfound(res);
+        return responseHandler.notfound(res, {
+          err: 'Username hoặc password không đúng!',
+        });
       }
 
       const checkPassword = await bcrypt.compare(
@@ -72,12 +84,14 @@ class authController {
       );
 
       if (!checkPassword) {
-        return responseHandler.badrequest(res, { err: 'Wrong Password!' });
+        return responseHandler.badrequest(res, {
+          err: 'Username hoặc password không đúng!',
+        });
       }
 
       const tokens = generateTokens({
         id: currentUser.id,
-        roll: currentUser.roll,
+        role: currentUser.role,
       });
 
       res.cookie('rftk', tokens.refreshToken, {
@@ -109,6 +123,7 @@ class authController {
         config.jwt.REFRESH_TOKEN_SECRET,
         async (err, decoded) => {
           if (err) {
+            res.clearCookie('rftk', { httpOnly: true }); // xóa refreshToken hết hạn
             return responseHandler.unauthorize(res, { err });
           }
 
@@ -120,7 +135,7 @@ class authController {
 
           const tokens = generateTokens({
             id: foundUser.id,
-            roll: foundUser.roll,
+            role: foundUser.role,
           });
 
           res.cookie('rftk', tokens.refreshToken, {
@@ -149,7 +164,7 @@ class authController {
 
       res.clearCookie('rftk', { httpOnly: true });
 
-      responseHandler.ok(res, { msg: 'Sign Out Successfully!' });
+      responseHandler.ok(res, { message: 'Đăng xuất thành công!!!' });
     } catch (error) {
       responseHandler.error(res, error);
     }

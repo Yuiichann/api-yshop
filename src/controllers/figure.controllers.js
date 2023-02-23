@@ -102,7 +102,9 @@ class figureController {
         .exec();
 
       if (figures.length === 0) {
-        return responseHandler.notfound(res);
+        return responseHandler.notfound(res, {
+          err: 'Danh sách sản phẩm rỗng!!!',
+        });
       }
 
       responseHandler.ok(res, { totalItems, totalPage, figures });
@@ -121,7 +123,9 @@ class figureController {
       const figure = await figureModel.findOne({ slug });
 
       if (!figure) {
-        return responseHandler.notfound(res);
+        return responseHandler.notfound(res, {
+          err: 'Không tìm thấy sản phẩm!!!',
+        });
       }
 
       responseHandler.ok(res, figure);
@@ -149,18 +153,35 @@ class figureController {
         .limit(15)
         .exec();
 
-      const data = {
-        popular: {
+      // const figures = await figureModel.aggregate([
+      //   {
+      //     $group: {
+      //       _id: '$category',
+      //       items: { $push: '$$ROOT' },
+      //     },
+      //   },
+      //   {
+      //     $project: {
+      //       category: '$_id',
+      //       type: 'slider',
+      //       items: { $slice: ['$items', 0, 15] },
+      //       _id: 0,
+      //     },
+      //   },
+      // ]);
+
+      const data = [
+        {
           title: 'Phổ biến',
           type: 'slider',
           items: popularFigures,
         },
-        promotion: {
+        {
           title: 'Khuyễn mãi',
           type: 'slider',
           items: promotionFigures,
         },
-      };
+      ];
 
       responseHandler.ok(res, data);
     } catch (error) {

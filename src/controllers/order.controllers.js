@@ -139,7 +139,9 @@ class orderController {
         .exec();
 
       if (!order) {
-        return responseHandler.notfound(res);
+        return responseHandler.notfound(res, {
+          err: 'Không tìm thấy đơn hàng!!!',
+        });
       }
 
       responseHandler.ok(res, order);
@@ -181,7 +183,9 @@ class orderController {
         .exec();
 
       if (!order) {
-        return responseHandler.notfound(res);
+        return responseHandler.notfound(res, {
+          err: 'Không tìm thấy đơn hàng!',
+        });
       }
 
       responseHandler.ok(res, order);

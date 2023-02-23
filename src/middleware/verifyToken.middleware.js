@@ -14,7 +14,7 @@ const verifyToken = async (req, res, next) => {
 
     jwt.verify(token, config.jwt.ACCESS_TOKEN_SECRET, (err, decoded) => {
       if (err) {
-        return responseHandler.unauthorize(res, { err });
+        return responseHandler.unauthorize(res, { err: err.name });
       }
 
       const { iat, exp, ...userInfo } = decoded;
@@ -42,14 +42,14 @@ const verifyTokenAdmin = async (req, res, next) => {
         return responseHandler.unauthorize(res, { err });
       }
 
-      const { iat, exp, id, roll } = decoded;
+      const { iat, exp, id, role } = decoded;
 
-      if (roll !== 'admin') {
+      if (role !== 'admin') {
         return responseHandler.unauthorize(res, {
           err: 'User does not have access to this resource!',
         });
       }
-      req.user = { id, roll };
+      req.user = { id, role };
 
       next();
     });
