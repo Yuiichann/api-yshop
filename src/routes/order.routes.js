@@ -25,6 +25,12 @@ router.post(
   orderControllers.createOrder
 );
 
+router.post(
+  '/check-in-stock',
+  ValidateJoi(validateSchema.order.checkInStock),
+  orderControllers.checkInStock
+);
+
 router.get('/of-user', verifyToken, orderControllers.getOrdersOfUser);
 
 router.get(

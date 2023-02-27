@@ -1,6 +1,9 @@
 import responseHandler from '../handlers/response.handler.js';
 import userModel from '../models/user.models.js';
 import cloudinary from '../configs/cloudinary.configs.js';
+import bcrypt from 'bcrypt';
+
+const saltRounds = 10;
 
 class userController {
   // @route [GET] /api/v1/users/info
@@ -12,7 +15,7 @@ class userController {
 
       const user = await userModel
         .findById(userId)
-        .select('-createdAt -updatedAt -password -roll');
+        .select('-createdAt -updatedAt -password -role');
 
       if (!user) {
         return responseHandler.notfound(res, {
@@ -45,6 +48,49 @@ class userController {
       responseHandler.ok(res, { msg: 'Set avatar successfully!' });
     } catch (error) {
       responseHandler(res, error);
+    }
+  }
+
+  // @route [PUT] /api/v1/users/update-password
+  // @desc check and update password
+  // @access PRIVATE
+  async updatePassword(req, res) {
+    try {
+      const user = req.user;
+      const { password, newPassword, confirm_newPassword } = req.body;
+
+      if (newPassword !== confirm_newPassword) {
+        return responseHandler.badrequest(res, {
+          err: 'Mật khẩu không trùng khớp!!!',
+        });
+      }
+
+      const currentUser = await userModel.findById(user.id);
+
+      if (!currentUser) {
+        return responseHandler.notfound(res, { err: 'Không tìm thấy user!!!' });
+      }
+
+      const checkPasswordCorrect = bcrypt.compareSync(
+        password,
+        currentUser.password
+      );
+
+      if (!checkPasswordCorrect) {
+        return responseHandler.badrequest(res, {
+          err: 'Mật khẩu user không hợp lệ!!!',
+        });
+      }
+
+      const hashPwd = bcrypt.hashSync(newPassword, saltRounds);
+
+      currentUser.password = hashPwd;
+
+      await currentUser.save();
+
+      responseHandler.ok(res, { message: 'Thay đổi mật khẩu thành công!' });
+    } catch (error) {
+      responseHandler.error(res, error);
     }
   }
 }

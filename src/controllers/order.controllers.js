@@ -5,6 +5,64 @@ import orderModel from '../models/order.models.js';
 const LIMIT_ITEM = 12;
 
 class orderController {
+  // @route POSt /api/v1/orders/check-in-stock
+  // @desc check in stock products
+  // @access Public
+  async checkInStock(req, res) {
+    try {
+      const { products } = req.body;
+
+      if (products.length > 10) {
+        return responseHandler.badrequest(res, {
+          err: 'Đơn hàng phải có ít hơn hoặc bằng 10 sản phẩm',
+        });
+      }
+
+      const figures = await figureModel
+        .find()
+        .select('in_stock price title id')
+        .where('_id')
+        .in(products.map((item) => item.figure_id));
+
+      console.log(figures);
+
+      // mảng chưa các figure_id đã out-of-stock
+      let products_out_stock = [];
+
+      // kiểm tra sản phẩm in_stock
+      for (let product of products) {
+        let current = figures.find((item) => item.id === product.figure_id);
+
+        current = current._doc;
+
+        // // nếu in_stock bằng 0 thì lỗi luôn
+        // if (current.in_stock === 0) {
+        //   return responseHandler.unprocessableEntity(res, {
+        //     err: `${current.title} is out-of-stock`,
+        //   });
+        // }
+
+        if (current && current['in_stock'] < product.quantity) {
+          products_out_stock.push(product.figure_id);
+        }
+      }
+
+      // nếu arr có item thì có sản phẩm hết hàng ==> return eror
+      if (products_out_stock.length > 0) {
+        return responseHandler.unprocessableEntity(res, {
+          err: {
+            msg: 'out-of-stock',
+            products: products_out_stock,
+          },
+        });
+      }
+
+      return res.sendStatus(204);
+    } catch (error) {
+      responseHandler.error(res, error);
+    }
+  }
+
   // @route POST /api/v1/orders/create
   // @desc create new purchase
   // @access Private

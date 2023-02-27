@@ -62,11 +62,11 @@ class authController {
     try {
       const cookies = req.cookies;
 
-      if (cookies && cookies.rftk) {
-        return responseHandler.badrequest(res, {
-          err: 'Mày đã loggin rồi đấy!!',
-        });
-      }
+      // if (cookies && cookies.rftk) {
+      //   return responseHandler.badrequest(res, {
+      //     err: 'Mày đã loggin rồi đấy!!',
+      //   });
+      // }
 
       const { username, password } = req.body;
 
