@@ -24,6 +24,7 @@ if (config.server.NODE_ENV && config.server.NODE_ENV === 'development') {
       credentials: true,
     })
   );
+  app.set('trust proxy', 1);
   app.use(morgan('combined'));
 }
 

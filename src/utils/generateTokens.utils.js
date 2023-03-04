@@ -3,7 +3,7 @@ import config from '../configs/config.js';
 
 const generateTokens = (payload) => {
   const accessToken = jwt.sign(payload, config.jwt.ACCESS_TOKEN_SECRET, {
-    expiresIn: '4m',
+    expiresIn: '1m',
   });
 
   const refreshToken = jwt.sign(payload, config.jwt.REFRESH_TOKEN_SECRET, {
