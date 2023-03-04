@@ -45,8 +45,6 @@ class authController {
       });
 
       res.cookie('rftk', tokens.refreshToken, {
-        domain: 'https://yshop.vercel.app',
-        path: '/',
         httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24 * 7,
         secure: true,
@@ -99,8 +97,7 @@ class authController {
       });
 
       res.cookie('rftk', tokens.refreshToken, {
-        domain: 'https://yshop.vercel.app',
-        path: '/',
+        domain: 'api-yshop.vercel.app',
         httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24 * 7,
         secure: true,
@@ -147,8 +144,6 @@ class authController {
           });
 
           res.cookie('rftk', tokens.refreshToken, {
-            domain: 'https://yshop.vercel.app',
-            path: '/',
             httpOnly: true,
             maxAge: 7 * 24 * 60 * 60 * 1000,
             secure: true,
@@ -175,8 +170,6 @@ class authController {
       }
 
       res.clearCookie('rftk', {
-        domain: 'https://yshop.vercel.app',
-        path: '/',
         httpOnly: true,
         secure: true,
         sameSite: 'none',
