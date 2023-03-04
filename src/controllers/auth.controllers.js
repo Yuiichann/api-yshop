@@ -45,9 +45,12 @@ class authController {
       });
 
       res.cookie('rftk', tokens.refreshToken, {
+        domain: 'yshop.vercel.app',
+        path: '/',
         httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24 * 7,
         secure: true,
+        sameSite: 'none',
       });
 
       responseHandler.ok(res, { accessToken: tokens.accessToken });
@@ -96,9 +99,12 @@ class authController {
       });
 
       res.cookie('rftk', tokens.refreshToken, {
+        domain: 'yshop.vercel.app',
+        path: '/',
         httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24 * 7,
         secure: true,
+        sameSite: 'none',
       });
 
       responseHandler.ok(res, {
@@ -141,9 +147,12 @@ class authController {
           });
 
           res.cookie('rftk', tokens.refreshToken, {
+            domain: 'yshop.vercel.app',
+            path: '/',
             httpOnly: true,
             maxAge: 7 * 24 * 60 * 60 * 1000,
             secure: true,
+            sameSite: 'none',
           });
 
           responseHandler.ok(res, { accessToken: tokens.accessToken });
@@ -165,7 +174,13 @@ class authController {
         return res.sendStatus(204);
       }
 
-      res.clearCookie('rftk', { httpOnly: true, secure: true });
+      res.clearCookie('rftk', {
+        domain: 'yshop.vercel.app',
+        path: '/',
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+      });
 
       responseHandler.ok(res, { message: 'Đăng xuất thành công!!!' });
     } catch (error) {
