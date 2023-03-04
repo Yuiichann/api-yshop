@@ -9,22 +9,29 @@ import routes from './src/routes/index.js';
 
 const app = express();
 
+if (config.server.NODE_ENV && config.server.NODE_ENV === 'development') {
+  app.use(
+    cors({
+      origin: 'http://localhost:3000',
+      credentials: true,
+    })
+  );
+  app.use(morgan('dev'));
+} else {
+  app.use(
+    cors({
+      origin: 'https://yshop.vercel.app',
+      credentials: true,
+    })
+  );
+  app.use(morgan('combined'));
+}
+
 app.disable('x-powered-by');
-app.use(
-  cors({
-    origin: 'http://localhost:3000',
-    credentials: true,
-  })
-);
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-if (config.server.NODE_ENV && config.server.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
-} else {
-  app.use(morgan('combined'));
-}
 
 // routes
 app.use('/api/v1', routes);
