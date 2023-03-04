@@ -24,8 +24,6 @@ class orderController {
         .where('_id')
         .in(products.map((item) => item.figure_id));
 
-      console.log(figures);
-
       // mảng chưa các figure_id đã out-of-stock
       let products_out_stock = [];
 
